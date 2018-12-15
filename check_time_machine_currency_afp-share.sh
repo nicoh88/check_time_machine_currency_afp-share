@@ -4,9 +4,9 @@
 #   Nico Hartung
 #   nicohartung1@googlemail.com
 
-#   Thanks for insperetion 
+#   Thanks for insperetion
 #   @jedda (https://github.com/jedda/OSX-Monitoring-Tools/blob/master/check_time_machine_currency.sh)
-#   @yesdevnull (https://github.com/yesdevnull/OSX-Monitoring-Tools/blob/master/check_time_machine_currency.sh) 
+#   @yesdevnull (https://github.com/yesdevnull/OSX-Monitoring-Tools/blob/master/check_time_machine_currency.sh)
 
 #   v1.0 - 22 March 2017
 #   Initial release.
@@ -63,7 +63,7 @@ lastBackupTotalBytesCopied=`echo $lastBackup | sed 's/^.*<integer>\(.*\)<\/integ
 
 if [ "$lastBackupDateString" == "" ]
 then
-    echo "CRITICAL - Time Machine has not completed a backup on this Mac!\n"
+    echo "CRITICAL - Time Machine has not completed a backup on this Mac! (chmod at com.apple.TimeMachine.SnapshotHistory.plist?)\n"
     exit 2
 fi
 
