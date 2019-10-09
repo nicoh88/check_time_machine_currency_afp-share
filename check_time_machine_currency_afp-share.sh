@@ -8,8 +8,10 @@
 #   @jedda (https://github.com/jedda/OSX-Monitoring-Tools/blob/master/check_time_machine_currency.sh)
 #   @yesdevnull (https://github.com/yesdevnull/OSX-Monitoring-Tools/blob/master/check_time_machine_currency.sh)
 
+#   v1.1 - 09 October 2019
+#   - New folder structure since macos catalina.
 #   v1.0 - 22 March 2017
-#   Initial release.
+#   - Initial release.
 
 #   This script checks the Time Machine SnapshotHistory on a Linux TimeMachine AFP Share (netatalk, sparsebundle) and reports if a backup/snapshot has completed within a number of minutes of the current time.
 #   Very useful if you are monitoring client production systems, and want to ensure backups are occurring.
@@ -45,19 +47,28 @@ then
     exit 3
 fi
 
-if [ "$path" == "" ]
-then
-    echo "ERROR - You must provide a path with -p!\n"
-    exit 3
-fi
-
 if [ "$hostname" == "" ]
 then
     echo "ERROR - You must provide a hostname -h!\n"
     exit 3
 fi
 
-lastBackup=`grep "com.apple.backupd.SnapshotCompletionDate" $path/$hostname.sparsebundle/com.apple.TimeMachine.SnapshotHistory.plist -A5 | tail -6`
+if [ "$path" == "" ]
+then
+    echo "ERROR - You must provide a path with -p!\n"
+    exit 3
+else
+    if [ -d "$path/$hostname.sparsebundle" ]; then pathdot=sparsebundle; fi
+    if [ -d "$path/$hostname.backupbundle" ]; then pathdot=backupbundle; fi
+fi
+
+if [ "$pathdot" == "" ]
+then
+    echo "ERROR - Not found a sparsebundle or backupbundle folder!\n"
+    exit 3
+fi
+
+lastBackup=`grep "com.apple.backupd.SnapshotCompletionDate" $path/$hostname.$pathdot/com.apple.TimeMachine.SnapshotHistory.plist -A5 | tail -6`
 lastBackupDateString=`echo $lastBackup | grep -E -o "[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}"`
 lastBackupTotalBytesCopied=`echo $lastBackup | sed 's/^.*<integer>\(.*\)<\/integer>.*$/\1/p'`
 
