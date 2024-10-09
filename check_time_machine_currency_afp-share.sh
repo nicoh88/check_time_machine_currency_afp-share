@@ -8,8 +8,10 @@
 #   @jedda (https://github.com/jedda/OSX-Monitoring-Tools/blob/master/check_time_machine_currency.sh)
 #   @yesdevnull (https://github.com/yesdevnull/OSX-Monitoring-Tools/blob/master/check_time_machine_currency.sh)
 
+#   v1.2 - 09 October 2024
+#   - No indication of "TotalBytesCopied" of the snapshots since new macos.
 #   v1.1 - 09 October 2019
-#   - New folder structure since macos catalina.
+#   - New folderstructur since macos catalina.
 #   v1.0 - 22 March 2017
 #   - Initial release.
 
@@ -93,17 +95,22 @@ lastBackupTotalGigaBytesCopied=`echo "scale=2; $lastBackupTotalBytesCopied / 102
 
 if [ "$diff" -gt "$critSeconds" ]
 then
-    echo "CRITICAL - Time Machine has not backed up since $lastBackupDate (more than $critHours hours)!"
+    echo "CRITICAL - Time Machine has not performed any backups since $lastBackupDate (more than $critHours hours)!"
     exit 2
 elif [ "$diff" -gt "$warnSeconds" ]
 then
-    echo "WARNING - Time Machine has not backed up since $lastBackupDate (more than $warnHours hours)!"
+    echo "WARNING - Time Machine has not performed any backups since $lastBackupDate (more than $warnHours hours)!"
     exit 1
 fi
 
 if [ "$lastBackupDateUnix" != "" ]
 then
-    echo "OK - A Time Machine backup has been taken within the last $warnHours hours - `echo $lastBackupTotalGigaBytesCopied | awk '{ print $2 }' | sed 's/^\./0\./g'` GB was additionally copied."
+    if [ "$lastBackupTotalGigaBytesCopied" == "" ]
+    then
+        echo "OK - Time Machine has performed a backup on $lastBackupDate (less than $warnHours hours)."
+    else
+        echo "OK - Time Machine has performed a backup on $lastBackupDate (less than $warnHours hours), `echo $lastBackupTotalGigaBytesCopied | awk '{ print $2 }' | sed 's/^\./0\./g'` GB was additionally copied."
+    fi
     exit 0
 else
     echo "CRITICAL - Could not determine the last backup date for this Mac."
